@@ -131,19 +131,33 @@ def move():
     dot(20, 'yellow')
 
     for point, course in ghosts:
-        if valid(point + course):
-            point.move(course)
+        dx = pacman.x - point.x
+        dy = pacman.y - point.y
+
+        if abs(dx) > abs(dy):
+            preferred = vector(5 if dx > 0 else -5, 0)
+        else:
+            preferred = vector(0, 5 if dy > 0 else -5)
+
+        if valid(point + preferred):
+            course.x = preferred.x
+            course.y = preferred.y
+        elif valid(point + course):
+            pass
         else:
             options = [
-                vector(5, 0),
-                vector(-5, 0),
-                vector(0, 5),
-                vector(0, -5),
+                vector(5, 0), vector(-5, 0),
+                vector(0, 5), vector(0, -5),
             ]
             plan = choice(options)
             course.x = plan.x
             course.y = plan.y
 
+        point.move(course)
+
+        up()
+        goto(point.x + 10, point.y + 10)
+        dot(20, 'red')
         up()
         goto(point.x + 10, point.y + 10)
         dot(20, 'red')
