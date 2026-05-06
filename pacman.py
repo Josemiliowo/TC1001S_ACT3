@@ -14,6 +14,8 @@ from turtle import *
 
 from freegames import floor, vector
 
+GHOST_SPEED_FACTOR = 0.6
+
 state = {'score': 0}
 path = Turtle(visible=False)
 writer = Turtle(visible=False)
@@ -28,13 +30,13 @@ ghosts = [
 # fmt: off
 tiles = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0,
+    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
     0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0,
     0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-    0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
     0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
     0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
     0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
@@ -135,9 +137,9 @@ def move():
         dy = pacman.y - point.y
 
         if abs(dx) > abs(dy):
-            preferred = vector(5 if dx > 0 else -5, 0)
+            preferred = vector(5*GHOST_SPEED_FACTOR if dx > 0 else -5*GHOST_SPEED_FACTOR, 0)
         else:
-            preferred = vector(0, 5 if dy > 0 else -5)
+            preferred = vector(0, 5*GHOST_SPEED_FACTOR if dy > 0 else -5*GHOST_SPEED_FACTOR)
 
         if valid(point + preferred):
             course.x = preferred.x
@@ -146,8 +148,10 @@ def move():
             pass
         else:
             options = [
-                vector(5, 0), vector(-5, 0),
-                vector(0, 5), vector(0, -5),
+                vector(5*GHOST_SPEED_FACTOR, 0),
+                vector(-5*GHOST_SPEED_FACTOR, 0),
+                vector(0, 5*GHOST_SPEED_FACTOR),
+                vector(0, -5*GHOST_SPEED_FACTOR),
             ]
             plan = choice(options)
             course.x = plan.x
@@ -168,7 +172,7 @@ def move():
         if abs(pacman - point) < 20:
             return
 
-    ontimer(move, 100)
+    ontimer(move, 80) #Mas tiempo, mas lento
 
 
 def change(x, y):
